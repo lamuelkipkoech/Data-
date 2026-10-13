@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Express - Buy Data via Mobile Money</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                            800: '#166534',
+                            900: '#14532d',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col justify-between">
+
+    <!-- Header Navigation -->
+    <header class="border-b border-slate-800 bg-slate-950/80 backdrop-blur sticky top-0 z-40">
+        <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-emerald-400 flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-brand-500/20">
+                    <i class="fa-solid fa-wifi"></i>
+                </div>
+                <div>
+                    <h1 class="font-extrabold text-lg tracking-tight text-white leading-tight">DATA<span class="text-brand-500">EXPRESS</span></h1>
+                    <p class="text-[11px] text-slate-400 font-medium">Instant Kenyan Data Crediting</p>
+                </div>
+            </div>
+
+            <!-- Header Right Menu -->
+            <div class="flex items-center space-x-3">
+                <button onclick="toggleAdminModal()" class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition flex items-center gap-2 border border-slate-700">
+                    <i class="fa-solid fa-user-shield text-brand-500"></i>
+                    <span>Admin Portal</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-6xl mx-auto px-4 py-8 flex-grow w-full">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            
+            <!-- Left Side: Purchase Wizard -->
+            <div class="lg:col-span-7 space-y-6">
+                
+                <!-- Wizard Stepper Indicator -->
+                <div class="bg-slate-950 border border-slate-800 rounded-2xl p-4 flex justify-between items-center">
+                    <div id="step-ind-1" class="flex items-center gap-2 font-semibold text-xs text-brand-500">
+                        <span class="w-6 h-6 rounded-full bg-brand-500 text-slate-950 flex items-center justify-center font-bold text-xs">1</span>
+                        <span>Select Plan</span>
+                    </div>
+                    <div class="h-0.5 w-6 bg-slate-800"></div>
+                    <div id="step-ind-2" class="flex items-center gap-2 font-semibold text-xs text-slate-500">
+                        <span class="w-6 h-6 rounded-full bg-slate-800 text-slate-400 flex items-center justify-center font-bold text-xs">2</span>
+                        <span>Send Money</span>
+                    </div>
+                    <div class="h-0.5 w-6 bg-slate-800"></div>
+                    <div id="step-ind-3" class="flex items-center gap-2 font-semibold text-xs text-slate-500">
+                        <span class="w-6 h-6 rounded-full bg-slate-800 text-slate-400 flex items-center justify-center font-bold text-xs">3</span>
+                        <span>Verify SMS</span>
+                    </div>
+                </div>
+
+                <!-- STEP 1: Select Telecom & Data Bundle -->
+                <div id="step-1" class="bg-slate-950 border border-slate-800 rounded-2xl p-6 space-y-6">
+                    <div>
+                        <h2 class="text-xl font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-mobile-screen-button text-brand-500"></i> 1. Select Telecom Provider
+                        </h2>
+                        <p class="text-xs text-slate-400 mt-1">Choose the provider you want to receive data on.</p>
+                    </div>
+
+                    <!-- Telecom Tabs -->
+                    <div class="grid grid-cols-3 gap-3">
+                        <button onclick="selectTelecom('safaricom')" id="telecom-safaricom" class="telecom-btn p-3 rounded-xl border border-brand-500 bg-brand-500/10 text-center transition">
+                            <span class="font-bold text-sm block text-emerald-400">Safaricom</span>
+                            <span class="text-[10px] text-slate-400">High Speed 4G/5G</span>
+                        </button>
+                        <button onclick="selectTelecom('airtel')" id="telecom-airtel" class="telecom-btn p-3 rounded-xl border border-slate-800 bg-slate-900 text-center hover:border-slate-700 transition">
+                            <span class="font-bold text-sm block text-red-400">Airtel</span>
+                            <span class="text-[10px] text-slate-400">Super Saver</span>
+                        </button>
+                        <button onclick="selectTelecom('telkom')" id="telecom-telkom" class="telecom-btn p-3 rounded-xl border border-slate-800 bg-slate-900 text-center hover:border-slate-700 transition">
+                            <span class="font-bold text-sm block text-cyan-400">Telkom</span>
+                            <span class="text-[10px] text-slate-400">Unlimited Plans</span>
+                        </button>
+                    </div>
+
+                    <!-- Target Phone Number Input -->
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 mb-2">Recipient Phone Number (To receive data):</label>
+                        <div class="relative">
+                            <span class="absolute left-3 top-3.5 text-slate-500 text-sm"><i class="fa-solid fa-phone"></i></span>
+                            <input type="text" id="recipient-phone" placeholder="e.g., 0712345678" class="w-full bg-slate-900 border border-slate-800 rounded-xl py-3 pl-10 pr-4 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-brand-500">
+                        </div>
+                    </div>
+
+                    <!-- Bundle Selection Grid -->
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 mb-3">Choose Your Data Bundle Package:</label>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="bundles-container">
+                            <!-- Populated dynamically via JS -->
+                        </div>
+                    </div>
+
+                    <button onclick="goToStep(2)" class="w-full bg-brand-600 hover:bg-brand-500 text-slate-950 font-extrabold py-3.5 rounded-xl transition shadow-lg shadow-brand-600/20 flex items-center justify-center gap-2">
+                        <span>Proceed to Payment Instructions</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+
+                <!-- STEP 2: Send Money to Authorized Number -->
+                <div id="step-2" class="hidden bg-slate-950 border border-slate-800 rounded-2xl p-6 space-y-6">
+                    <div>
+                        <h2 class="text-xl font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-money-bill-transfer text-brand-500"></i> 2. Send Money to Complete Order
+                        </h2>
+                        <p class="text-xs text-slate-400 mt-1">Send exact amount using M-Pesa / Mobile Money to the agent phone number below.</p>
+                    </div>
+
+                    <!-- Payment Summary Box -->
+                    <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-4 space-y-2">
+                        <div class="flex justify-between text-xs text-slate-400">
+                            <span>Selected Bundle:</span>
+                            <span id="summary-bundle-name" class="font-bold text-white">-</span>
+                        </div>
+                        <div class="flex justify-between text-xs text-slate-400">
+                            <span>Recipient Phone:</span>
+                            <span id="summary-recipient-phone" class="font-bold text-white">-</span>
+                        </div>
+                        <div class="flex justify-between text-sm border-t border-slate-800 pt-2 font-bold">
+                            <span class="text-slate-300">Amount to Send:</span>
+                            <span id="summary-amount" class="text-brand-500 text-lg">KES 0</span>
+                        </div>
+                    </div>
+
+                    <!-- Receiving Account Box -->
+                    <div class="bg-emerald-950/30 border border-emerald-500/30 rounded-xl p-5 space-y-4">
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs font-bold text-emerald-400 uppercase tracking-wider">Send Payment To:</span>
+                            <span class="text-[10px] bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded border border-emerald-500/20">Verified Merchant</span>
+                        </div>
+                        
+                        <div class="flex items-center justify-between bg-slate-950 p-3 rounded-lg border border-slate-800">
+                            <div>
+                                <p class="text-xs text-slate-500">Mobile Money / M-Pesa Number:</p>
+                                <p id="merchant-phone-display" class="font-mono text-xl font-extrabold text-white">0798 654 321</p>
+                            </div>
+                            <button onclick="copyMerchantPhone()" class="bg-slate-800 hover:bg-slate-700 text-xs px-3 py-2 rounded-lg text-slate-200 transition">
+                                <i class="fa-solid fa-copy"></i> Copy
+                            </button>
+                        </div>
+
+                        <div class="text-xs space-y-1 text-slate-300">
+                            <p><span class="text-slate-500">Registered Name:</span> <strong id="merchant-name-display" class="text-white">SAMUEL MUTUA (DATA EXPRESS)</strong></p>
+                        </div>
+                    </div>
+
+                    <!-- Steps Guide -->
+                    <div class="bg-slate-900 p-4 rounded-xl space-y-2 text-xs text-slate-300">
+                        <p class="font-bold text-white mb-1"><i class="fa-solid fa-circle-info text-brand-500"></i> How to pay:</p>
+                        <ol class="list-decimal list-inside space-y-1 text-slate-400">
+                            <li>Open M-Pesa / Mobile Money menu on your phone.</li>
+                            <li>Select <strong>Send Money</strong>.</li>
+                            <li>Enter phone number: <strong id="merchant-phone-guide" class="text-white">0798654321</strong></li>
+                            <li>Enter exact amount: <strong id="merchant-amount-guide" class="text-brand-400">KES 0</strong></li>
+                            <li>Complete transaction with your M-Pesa PIN.</li>
+                        </ol>
+                    </div>
+
+                    <div class="flex gap-3">
+                        <button onclick="goToStep(1)" class="w-1/3 bg-slate-900 hover:bg-slate-800 text-slate-300 font-semibold py-3 rounded-xl transition">
+                            Back
+                        </button>
+                        <button onclick="goToStep(3)" class="w-2/3 bg-brand-600 hover:bg-brand-500 text-slate-950 font-extrabold py-3 rounded-xl transition shadow-lg shadow-brand-600/20">
+                            I Have Sent Payment <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- STEP 3: Confirm SMS Message -->
+                <div id="step-3" class="hidden bg-slate-950 border border-slate-800 rounded-2xl p-6 space-y-6">
+                    <div>
+                        <h2 class="text-xl font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-comment-sms text-brand-500"></i> 3. Paste M-Pesa SMS Confirmation
+                        </h2>
+                        <p class="text-xs text-slate-400 mt-1">Paste the full M-Pesa confirmation text message you received to credit the data.</p>
+                    </div>
+
+                    <!-- Auto-Fill Sample Button for Testing -->
+                    <div class="flex justify-end">
+                        <button onclick="autoFillSampleSMS()" class="text-xs text-brand-400 hover:text-brand-300 underline font-medium">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i> Auto-fill Sample SMS (Demo Testing)
+                        </button>
+                    </div>
+
+                    <!-- SMS Text Input Box -->
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 mb-2">Paste M-Pesa / Mobile Money SMS Text:</label>
+                        <textarea id="sms-input" rows="4" placeholder="e.g. QK89123456 Confirmed. Ksh100.00 sent to SAMUEL MUTUA 0798654321 on 05/10/26 at 6:30 PM..." class="w-full bg-slate-900 border border-slate-800 rounded-xl p-3 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-brand-500 font-mono"></textarea>
+                    </div>
+
+                    <!-- Verification Results Box -->
+                    <div id="verification-status" class="hidden rounded-xl p-4 text-xs font-medium border">
+                        <!-- Populated dynamically -->
+                    </div>
+
+                    <div class="flex gap-3">
+                        <button onclick="goToStep(2)" class="w-1/3 bg-slate-900 hover:bg-slate-800 text-slate-300 font-semibold py-3 rounded-xl transition">
+                            Back
+                        </button>
+                        <button onclick="verifyAndCreditData()" id="verify-btn" class="w-2/3 bg-brand-600 hover:bg-brand-500 text-slate-950 font-extrabold py-3 rounded-xl transition shadow-lg shadow-brand-600/20 flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-shield-check"></i> Verify & Credit Data Now
+                        </button>
+                    </div>
+                </div>
+
+                <!-- STEP 4: Success Screen -->
+                <div id="step-4" class="hidden bg-slate-950 border border-brand-500/40 rounded-2xl p-8 text-center space-y-6">
+                    <div class="w-20 h-20 bg-brand-500/20 text-brand-400 rounded-full flex items-center justify-center mx-auto text-4xl border border-brand-500/30">
+                        <i class="fa-solid fa-circle-check"></i>
+                    </div>
+
+                    <div class="space-y-2">
+                        <h2 class="text-2xl font-extrabold text-white">Data Credited Successfully!</h2>
+                        <p class="text-xs text-slate-400">Your bundle has been processed and credited to your line.</p>
+                    </div>
+
+                    <!-- Transaction Summary -->
+                    <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 text-left text-xs space-y-2 max-w-md mx-auto">
+                        <div class="flex justify-between border-b border-slate-800 pb-2">
+                            <span class="text-slate-400">Transaction ID:</span>
+                            <span id="res-tx-code" class="font-mono text-brand-400 font-bold">-</span>
+                        </div>
+                        <div class="flex justify-between border-b border-slate-800 pb-2">
+                            <span class="text-slate-400">Bundle Plan:</span>
+                            <span id="res-bundle-name" class="text-white font-semibold">-</span>
+                        </div>
+                        <div class="flex justify-between border-b border-slate-800 pb-2">
+                            <span class="text-slate-400">Recipient Phone:</span>
+                            <span id="res-recipient-phone" class="text-white font-semibold">-</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-slate-400">Status:</span>
+                            <span class="text-emerald-400 font-bold flex items-center gap-1"><i class="fa-solid fa-check"></i> ACTIVE</span>
+                        </div>
+                    </div>
+
+                    <button onclick="resetApp()" class="bg-slate-800 hover:bg-slate-700 text-white font-bold px-6 py-3 rounded-xl transition text-xs">
+                        Buy Another Data Bundle
+                    </button>
+                </div>
+
+            </div>
+
+            <!-- Right Side: Order Summary & Info -->
+            <div class="lg:col-span-5 space-y-6">
+                
+                <!-- Guarantee Box -->
+                <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6 space-y-4">
+                    <h3 class="font-bold text-white text-sm flex items-center gap-2">
+                        <i class="fa-solid fa-bolt text-amber-400"></i> Instant Automated Delivery
+                    </h3>
+                    <p class="text-xs text-slate-400 leading-relaxed">
+                        Once you send payment to our authorized receiver number and paste the M-Pesa SMS confirmation, our automated system validates the transaction code and credits the bundle within 30 seconds.
+                    </p>
+
+                    <div class="border-t border-slate-800 pt-4 space-y-3">
+                        <div class="flex items-center gap-3 text-xs text-slate-300">
+                            <i class="fa-solid fa-shield-halved text-brand-500 text-base"></i>
+                            <span>100% Guaranteed Refund if crediting fails.</span>
+                        </div>
+                        <div class="flex items-center gap-3 text-xs text-slate-300">
+                            <i class="fa-solid fa-clock text-brand-500 text-base"></i>
+                            <span>24/7 Operations across Kenya.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Live Recent System Credits Feed -->
+                <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6 space-y-4">
+                    <h3 class="font-bold text-white text-sm flex items-center justify-between">
+                        <span><i class="fa-solid fa-arrows-rotate text-brand-500 animate-spin"></i> Live Recent Credited Orders</span>
+                        <span class="text-[10px] text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">LIVE</span>
+                    </h3>
+
+                    <div class="space-y-3" id="recent-feed">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </main>
+
+    <!-- ADMIN MODAL -->
+    <div id="admin-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col shadow-2xl">
+            
+            <!-- Admin Header -->
+            <div class="p-5 border-b border-slate-800 flex justify-between items-center bg-slate-950">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-lock text-brand-500"></i>
+                    <h2 class="font-extrabold text-white text-lg">Admin Management Portal</h2>
+                </div>
+                <button onclick="toggleAdminModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+
+            <!-- Admin Body Content -->
+            <div class="p-6 overflow-y-auto space-y-6 flex-grow">
+                
+                <!-- LOGIN SCREEN (If not authenticated) -->
+                <div id="admin-login-view" class="max-w-md mx-auto py-8 space-y-4">
+                    <div class="text-center space-y-1">
+                        <i class="fa-solid fa-user-lock text-4xl text-brand-500 mb-2"></i>
+                        <h3 class="font-bold text-white text-lg">Owner Authorization Required</h3>
+                        <p class="text-xs text-slate-400">Enter your owner password to view system logs and configuration.</p>
+                    </div>
+
+                    <div class="space-y-3">
+                        <div>
+                            <label class="block text-xs text-slate-400 mb-1">Admin Password:</label>
+                            <input type="password" id="admin-password-input" placeholder="Enter password" class="w-full bg-slate-950 border border-slate-800 rounded-xl py-2.5 px-3 text-sm text-white focus:outline-none focus:border-brand-500">
+                        </div>
+                        <div id="login-error" class="text-red-400 text-xs hidden font-medium">
+                            <i class="fa-solid fa-triangle-exclamation"></i> Invalid admin password!
+                        </div>
+                        <button onclick="authenticateAdmin()" class="w-full bg-brand-600 hover:bg-brand-500 text-slate-950 font-bold py-2.5 rounded-xl text-sm transition">
+                            Login to Dashboard
+                        </button>
+                    </div>
+                </div>
+
+                <!-- DASHBOARD VIEW (Visible after login) -->
+                <div id="admin-dashboard-view" class="hidden space-y-6">
+                    
+                    <!-- Stats Overview -->
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div class="bg-slate-950 p-4 rounded-xl border border-slate-800">
+                            <span class="text-xs text-slate-400">Total Volume Processed</span>
+                            <p id="stat-total-amount" class="text-xl font-bold text-brand-400 mt-1">KES 0</p>
+                        </div>
+                        <div class="bg-slate-950 p-4 rounded-xl border border-slate-800">
+                            <span class="text-xs text-slate-400">Successful Orders</span>
+                            <p id="stat-total-orders" class="text-xl font-bold text-white mt-1">0</p>
+                        </div>
+                        <div class="bg-slate-950 p-4 rounded-xl border border-slate-800">
+                            <span class="text-xs text-slate-400">Receiving Merchant Number</span>
+                            <p id="stat-merchant-num" class="text-sm font-mono font-bold text-slate-200 mt-1">0798654321</p>
+                        </div>
+                    </div>
+
+                    <!-- Config Settings Section -->
+                    <div class="bg-slate-950 p-5 rounded-xl border border-slate-800 space-y-4">
+                        <h3 class="font-bold text-white text-sm border-b border-slate-800 pb-2">
+                            <i class="fa-solid fa-gear text-brand-500"></i> Update Payment Receiver Details
+                        </h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs text-slate-400 mb-1">Receiver Phone Number:</label>
+                                <input type="text" id="config-phone" class="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white">
+                            </div>
+                            <div>
+                                <label class="block text-xs text-slate-400 mb-1">Receiver Name:</label>
+                                <input type="text" id="config-name" class="w-full bg-slate-900 border border-slate-800 rounded-lg p-2 text-xs text-white">
+                            </div>
+                        </div>
+                        <button onclick="saveMerchantSettings()" class="bg-slate-800 hover:bg-slate-700 text-xs px-4 py-2 rounded-lg text-white font-semibold transition">
+                            Save Changes
+                        </button>
+                    </div>
+
+                    <!-- Logs Table -->
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center">
+                            <h3 class="font-bold text-white text-sm"><i class="fa-solid fa-list-check text-brand-500"></i> Transaction Audit Log</h3>
+                            <button onclick="clearLogs()" class="text-xs text-red-400 hover:text-red-300">Clear Logs</button>
+                        </div>
+
+                        <div class="bg-slate-950 border border-slate-800 rounded-xl overflow-x-auto">
+                            <table class="w-full text-left text-xs text-slate-300">
+                                <thead class="bg-slate-900 text-slate-400 border-b border-slate-800 font-semibold">
+                                    <tr>
+                                        <th class="p-3">Time</th>
+                                        <th class="p-3">Code</th>
+                                        <th class="p-3">Recipient</th>
+                                        <th class="p-3">Bundle</th>
+                                        <th class="p-3">Amount</th>
+                                        <th class="p-3">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="admin-logs-tbody" class="divide-y divide-slate-800 font-mono">
+                                    <!-- Populated by JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="border-t border-slate-800 py-6 text-center text-xs text-slate-500 bg-slate-950">
+        <p>© 2026 Data Express Kenya. Automated Mobile Money & Data Crediting System.</p>
+    </footer>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        // State Management
+        let appState = {
+            selectedTelecom: 'safaricom',
+            selectedBundle: null,
+            recipientPhone: '',
+            adminAuthenticated: false,
+            merchantPhone: '0798654321',
+            merchantName: 'SAMUEL MUTUA (DATA EXPRESS)',
+            adminPassword: 'AdmiN8677'
+        };
+
+        // Bundle Data Definitions
+        const bundles = {
+            safaricom: [
+                { id: 'saf-1', name: '3 GB (24 Hours)', price: 100, speed: '4G/5G' },
+                { id: 'saf-2', name: '2.5 GB (7 Days)', price: 180, speed: '4G/5G' },
+                { id: 'saf-3', name: '10 GB (30 Days)', price: 250, speed: '4G/5G' },
+                { id: 'saf-4', name: '25 GB (30 Days)', price: 500, speed: '4G/5G' }
+            ],
+            airtel: [
+                { id: 'air-1', name: '2 GB (24 Hours)', price: 50, speed: '4G' },
+                { id: 'air-2', name: '7 GB (7 Days)', price: 100, speed: '4G' },
+                { id: 'air-3', name: '25 GB (30 Days)', price: 250, speed: '4G' },
+                { id: 'air-4', name: '35 GB (30 Days)', price: 500, speed: '4G' }
+            ],
+            telkom: [
+                { id: 'tel-1', name: '4 GB (24 Hours)', price: 50, speed: '4G' },
+                { id: 'tel-2', name: '10 GB (7 Days)', price: 100, speed: '4G' },
+                { id: 'tel-3', name: '25 GB (30 Days)', price: 250, speed: '4G' },
+                { id: 'tel-4', name: '50 GB (30 Days)', price: 500, speed: '4G' }
+            ]
+        };
+
+        // Local Storage Helpers
+        function getSavedLogs() {
+            return JSON.parse(localStorage.getItem('data_express_logs') || '[]');
+        }
+
+        function saveLog(logEntry) {
+            const logs = getSavedLogs();
+            logs.unshift(logEntry);
+            localStorage.setItem('data_express_logs', JSON.stringify(logs));
+            renderAdminLogs();
+        }
+
+        // Telecom Selection
+        function selectTelecom(telecomKey) {
+            appState.selectedTelecom = telecomKey;
+            
+            // Update Styles
+            document.querySelectorAll('.telecom-btn').forEach(btn => {
+                btn.classList.remove('border-brand-500', 'bg-brand-500/10');
+                btn.classList.add('border-slate-800', 'bg-slate-900');
+            });
+            const activeBtn = document.getElementById(`telecom-${telecomKey}`);
+            activeBtn.classList.add('border-brand-500', 'bg-brand-500/10');
+
+            renderBundles();
+        }
+
+        // Render Bundles List
+        function renderBundles() {
+            const container = document.getElementById('bundles-container');
+            container.innerHTML = '';
+
+            const list = bundles[appState.selectedTelecom];
+            list.forEach((b, index) => {
+                const isSelected = appState.selectedBundle && appState.selectedBundle.id === b.id;
+                if (index === 0 && !appState.selectedBundle) appState.selectedBundle = b;
+
+                const card = document.createElement('div');
+                card.onclick = () => {
+                    appState.selectedBundle = b;
+                    renderBundles();
+                };
+                card.className = `p-4 rounded-xl border cursor-pointer transition flex justify-between items-center ${
+                    appState.selectedBundle && appState.selectedBundle.id === b.id
+                        ? 'border-brand-500 bg-brand-500/10 ring-1 ring-brand-500'
+                        : 'border-slate-800 bg-slate-900 hover:border-slate-700'
+                }`;
+
+                card.innerHTML = `
+                    <div>
+                        <span class="text-xs font-bold text-white block">${b.name}</span>
+                        <span class="text-[10px] text-slate-400">${b.speed} Speed</span>
+                    </div>
+                    <div class="text-right">
+                        <span class="text-sm font-extrabold text-brand-400 block">KES ${b.price}</span>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // Step Navigation Logic
+        function goToStep(stepNum) {
+            if (stepNum === 2) {
+                const phone = document.getElementById('recipient-phone').value.trim();
+                if (!phone || phone.length < 10) {
+                    alert('Please enter a valid recipient phone number (e.g., 0712345678).');
+                    return;
+                }
+                appState.recipientPhone = phone;
+
+                // Update Summary Fields
+                document.getElementById('summary-bundle-name').innerText = `${appState.selectedTelecom.toUpperCase()} - ${appState.selectedBundle.name}`;
+                document.getElementById('summary-recipient-phone').innerText = appState.recipientPhone;
+                document.getElementById('summary-amount').innerText = `KES ${appState.selectedBundle.price}`;
+
+                document.getElementById('merchant-phone-display').innerText = appState.merchantPhone;
+                document.getElementById('merchant-phone-guide').innerText = appState.merchantPhone;
+                document.getElementById('merchant-name-display').innerText = appState.merchantName;
+                document.getElementById('merchant-amount-guide').innerText = `KES ${appState.selectedBundle.price}`;
+            }
+
+            // Hide all steps
+            [1, 2, 3, 4].forEach(s => {
+                document.getElementById(`step-${s}`).classList.add('hidden');
+                
+                // Stepper Header Indicators
+                const ind = document.getElementById(`step-ind-${s}`);
+                if (ind && s <= 3) {
+                    if (s === stepNum) {
+                        ind.className = "flex items-center gap-2 font-semibold text-xs text-brand-500";
+                        ind.querySelector('span').className = "w-6 h-6 rounded-full bg-brand-500 text-slate-950 flex items-center justify-center font-bold text-xs";
+                    } else {
+                        ind.className = "flex items-center gap-2 font-semibold text-xs text-slate-500";
+                        ind.querySelector('span').className = "w-6 h-6 rounded-full bg-slate-800 text-slate-400 flex items-center justify-center font-bold text-xs";
+                    }
+                }
+            });
+
+            document.getElementById(`step-${stepNum}`).classList.remove('hidden');
+        }
+
+        // Auto-fill sample SMS for demo testing
+        function autoFillSampleSMS() {
+            const randomCode = 'QK' + Math.floor(10000000 + Math.random() * 90000000);
+            const price = appState.selectedBundle ? appState.selectedBundle.price : 100;
+            const text = `${randomCode} Confirmed. Ksh${price}.00 sent to ${appState.merchantName} ${appState.merchantPhone} on ${new Date().toLocaleDateString()} at 6:30 PM. New M-Pesa balance is Ksh1,420.00. Transaction cost, Ksh0.00.`;
+            document.getElementById('sms-input').value = text;
+        }
+
+        // Verify M-Pesa SMS and Credit Data
+        function verifyAndCreditData() {
+            const rawSms = document.getElementById('sms-input').value.trim();
+            const statusBox = document.getElementById('verification-status');
+            const verifyBtn = document.getElementById('verify-btn');
+
+            if (!rawSms) {
+                alert('Please paste the M-Pesa confirmation SMS.');
+                return;
+            }
+
+            verifyBtn.disabled = true;
+            verifyBtn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> Verifying with M-Pesa...`;
+
+            setTimeout(() => {
+                // Regex validation for M-Pesa code & amount
+                const codeMatch = rawSms.match(/([A-Z0-9]{10})\s+Confirmed/i) || rawSms.match(/^([A-Z0-9]{10})/i);
+                const amountMatch = rawSms.match(/Ksh\s*([\d,]+(?:\.\d{2})?)/i);
+
+                if (!codeMatch) {
+                    statusBox.className = "rounded-xl p-4 text-xs font-medium border bg-red-500/10 border-red-500/30 text-red-400 block";
+                    statusBox.innerHTML = `<i class="fa-solid fa-circle-xmark"></i> Invalid M-Pesa SMS format. Could not locate transaction code.`;
+                    verifyBtn.disabled = false;
+                    verifyBtn.innerHTML = `<i class="fa-solid fa-shield-check"></i> Verify & Credit Data Now`;
+                    return;
+                }
+
+                const txCode = codeMatch[1].toUpperCase();
+                const paidAmount = amountMatch ? parseFloat(amountMatch[1].replace(',', '')) : 0;
+                const requiredPrice = appState.selectedBundle.price;
+
+                // Check for duplicate used code in logs
+                const logs = getSavedLogs();
+                const codeUsed = logs.some(l => l.code === txCode);
+
+                if (codeUsed) {
+                    statusBox.className = "rounded-xl p-4 text-xs font-medium border bg-amber-500/10 border-amber-500/30 text-amber-400 block";
+                    statusBox.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> Transaction code <strong>${txCode}</strong> has already been claimed!`;
+                    verifyBtn.disabled = false;
+                    verifyBtn.innerHTML = `<i class="fa-solid fa-shield-check"></i> Verify & Credit Data Now`;
+                    return;
+                }
+
+                if (paidAmount > 0 && paidAmount < requiredPrice) {
+                    statusBox.className = "rounded-xl p-4 text-xs font-medium border bg-amber-500/10 border-amber-500/30 text-amber-400 block";
+                    statusBox.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> Insufficient Payment! Sent: KES ${paidAmount}, Required: KES ${requiredPrice}.`;
+                    verifyBtn.disabled = false;
+                    verifyBtn.innerHTML = `<i class="fa-solid fa-shield-check"></i> Verify & Credit Data Now`;
+                    return;
+                }
+
+                // Success Crediting
+                const newLog = {
+                    time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                    code: txCode,
+                    recipient: appState.recipientPhone,
+                    bundle: appState.selectedBundle.name,
+                    amount: requiredPrice,
+                    status: 'SUCCESS'
+                };
+
+                saveLog(newLog);
+
+                // Populate Step 4 Results
+                document.getElementById('res-tx-code').innerText = txCode;
+                document.getElementById('res-bundle-name').innerText = `${appState.selectedTelecom.toUpperCase()} - ${appState.selectedBundle.name}`;
+                document.getElementById('res-recipient-phone').innerText = appState.recipientPhone;
+
+                verifyBtn.disabled = false;
+                verifyBtn.innerHTML = `<i class="fa-solid fa-shield-check"></i> Verify & Credit Data Now`;
+                
+                goToStep(4);
+                addLiveRecentFeed(newLog);
+            }, 1200);
+        }
+
+        // Admin Portal Functions
+        function toggleAdminModal() {
+            const modal = document.getElementById('admin-modal');
+            modal.classList.toggle('hidden');
+        }
+
+        function authenticateAdmin() {
+            const pass = document.getElementById('admin-password-input').value;
+            const err = document.getElementById('login-error');
+
+            if (pass === appState.adminPassword) {
+                appState.adminAuthenticated = true;
+                err.classList.add('hidden');
+                document.getElementById('admin-login-view').classList.add('hidden');
+                document.getElementById('admin-dashboard-view').classList.remove('hidden');
+
+                document.getElementById('config-phone').value = appState.merchantPhone;
+                document.getElementById('config-name').value = appState.merchantName;
+
+                renderAdminLogs();
+            } else {
+                err.classList.remove('hidden');
+            }
+        }
+
+        function renderAdminLogs() {
+            if (!appState.adminAuthenticated) return;
+
+            const logs = getSavedLogs();
+            const tbody = document.getElementById('admin-logs-tbody');
+            tbody.innerHTML = '';
+
+            let totalVol = 0;
+
+            if (logs.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-500">No transaction logs recorded yet.</td></tr>`;
+            } else {
+                logs.forEach(l => {
+                    totalVol += Number(l.amount || 0);
+                    const row = document.createElement('tr');
+                    row.className = "hover:bg-slate-900/50";
+                    row.innerHTML = `
+                        <td class="p-3 text-slate-400">${l.time}</td>
+                        <td class="p-3 font-bold text-brand-400">${l.code}</td>
+                        <td class="p-3">${l.recipient}</td>
+                        <td class="p-3 text-slate-300">${l.bundle}</td>
+                        <td class="p-3 font-bold text-white">KES ${l.amount}</td>
+                        <td class="p-3"><span class="bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded text-[10px] font-bold border border-emerald-500/20">${l.status}</span></td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            }
+
+            document.getElementById('stat-total-amount').innerText = `KES ${totalVol.toLocaleString()}`;
+            document.getElementById('stat-total-orders').innerText = logs.length;
+            document.getElementById('stat-merchant-num').innerText = appState.merchantPhone;
+        }
+
+        function saveMerchantSettings() {
+            appState.merchantPhone = document.getElementById('config-phone').value;
+            appState.merchantName = document.getElementById('config-name').value;
+            alert('Merchant configuration settings updated successfully.');
+            renderAdminLogs();
+        }
+
+        function clearLogs() {
+            if (confirm('Are you sure you want to clear all transaction logs?')) {
+                localStorage.removeItem('data_express_logs');
+                renderAdminLogs();
+            }
+        }
+
+        function copyMerchantPhone() {
+            navigator.clipboard.writeText(appState.merchantPhone);
+            alert('Phone number copied to clipboard: ' + appState.merchantPhone);
+        }
+
+        function resetApp() {
+            document.getElementById('sms-input').value = '';
+            document.getElementById('verification-status').classList.add('hidden');
+            goToStep(1);
+        }
+
+        // Live Mock Feed Generator
+        function addLiveRecentFeed(entry) {
+            const container = document.getElementById('recent-feed');
+            const item = document.createElement('div');
+            item.className = "flex items-center justify-between text-xs bg-slate-900 p-2.5 rounded-lg border border-slate-800";
+            item.innerHTML = `
+                <div>
+                    <span class="font-bold text-white block">${entry.recipient.substring(0, 4)}***${entry.recipient.substring(7)}</span>
+                    <span class="text-[10px] text-slate-400">${entry.bundle}</span>
+                </div>
+                <div class="text-right">
+                    <span class="text-emerald-400 font-bold block"><i class="fa-solid fa-check"></i> Credited</span>
+                    <span class="text-[10px] font-mono text-slate-500">${entry.code}</span>
+                </div>
+            `;
+            container.prepend(item);
+            if (container.children.length > 5) {
+                container.removeChild(container.lastChild);
+            }
+        }
+
+        // Initialize App
+        window.onload = function() {
+            selectTelecom('safaricom');
+
+            // Populate initial recent feed
+            const sampleFeeds = [
+                { recipient: '0722123456', bundle: 'Safaricom 2.5 GB', code: 'QK98124512' },
+                { recipient: '0733987654', bundle: 'Airtel 5 GB', code: 'QK98112809' },
+                { recipient: '0711554433', bundle: 'Safaricom 6 GB', code: 'QK98099123' }
+            ];
+            sampleFeeds.forEach(f => addLiveRecentFeed(f));
+        };
+    </script>
+</body>
+</html>
